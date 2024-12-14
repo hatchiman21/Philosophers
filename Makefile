@@ -7,7 +7,7 @@ SRCS:= $(addprefix $(SRC_DR)/, $(SRCS))
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -L$(LIBFT_DIR) -lft
+CFLAGS = -Wall -Werror -Wextra -pthread -L$(LIBFT_DIR) -lft
 
 NAME = philo
 

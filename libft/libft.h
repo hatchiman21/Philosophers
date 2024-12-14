@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 03:59:10 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/03 18:56:18 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/13 07:46:13 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ int				ft_strncmp(const char *s1, const char *s2, size_t n);
 long int		ft_atoi(const char *str);
 unsigned int	ft_atoi_base(const char *str, int base);
 
-void			*ft_memset(void *b, int c, size_t len);
 void			ft_bzero(void *s, size_t n);
 void			*ft_memcpy(void *dst, const void *src, size_t n);
-void			*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void			*ft_memmove(void *dst, const void *src, size_t len);
 
 void			*ft_memchr(const void *s, int c, size_t n);
@@ -94,9 +92,5 @@ t_list			*ft_lstmap(t_list *lst,
 int				ft_putnbr_hex_fd(unsigned long n, int fd, int j);
 int				ft_printf(const char *string, ...);
 int				ft_dprintf(int fd, const char *string, ...);
-
-int				ft_strchr_find(const char *s, int c);
-char			*ft_lstclear_item(t_line_list **lst, int fd);
-char			*get_next_line(int fd);
 
 #endif
