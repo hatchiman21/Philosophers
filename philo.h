@@ -6,14 +6,13 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/14 13:21:56 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/15 22:53:34 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
-# define PHOLO_H
+# define PHILO_H
 
-# include "libft/libft.h"
 # include <pthread.h>
 # include <sys/time.h>
 # include <string.h>
@@ -21,36 +20,39 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-# define THINKING 0
-# define EATING 1
+# define EATING 0
+# define THINKING 1
 # define SLEEPING 2
-
-typedef struct s_utinsels
-{
-	int				is_used;
-	pthread_mutex_t	mutex;
-}					t_utinsels;
 
 typedef struct s_philo_process
 {
 	pthread_t		thread;
 	struct timeval	last_meal;
-	struct timeval	start_time;
-	struct timeval	current_time;
+	struct timeval	time;
 	int				state;
 	int				philo_num;
+	int				is_dead;
 	struct s_philo	*philo_data;
 }					t_philo_process;
 
 typedef struct s_philo
 {
 	int				philos_count;
-	int				t_to_die;
-	int				t_to_eat;
-	int				t_to_sleep;
-	int				death;
+	unsigned int	t_to_die;
+	unsigned int	t_to_eat;
+	unsigned int	t_to_sleep;
+	unsigned int	death;
 	t_philo_process	**process;
-	t_utinsels		**fork;
+	pthread_mutex_t	*fork;
 }					t_philo;
+
+long	ft_atoi(const char *str);
+int		ft_isdigit(int c);
+void	philo_error_handling(t_philo *phil, int error);
+void	check_input(char *argv[], int argc);
+int		check_starvation(t_philo_process *process, int holding_forks, int next_fork);
+
+void	kill_the_rest(t_philo *philos);
+void	*philo_life(void *arg);
 
 #endif

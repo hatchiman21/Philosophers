@@ -1,20 +1,16 @@
 LIBFT_DIR = ./libft
 SRC_DR = ./src
-LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = main.c 
+SRCS = main.c philo_life.c philo_utils.c
 SRCS:= $(addprefix $(SRC_DR)/, $(SRCS))
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -pthread -L$(LIBFT_DIR) -lft
+CFLAGS = -Wall -Werror -Wextra -pthread
 
 NAME = philo
 
-all: $(LIBFT) $(NAME)
-
-$(LIBFT):
-	$(MAKE) -C $(LIBFT_DIR)
+all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(OBJS) -o $(NAME) $(CFLAGS)
@@ -23,11 +19,9 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(MAKE) -C $(LIBFT_DIR) clean
 	$(RM) $(OBJS)
 
 fclean: clean
-	$(MAKE) -C $(LIBFT_DIR) fclean
 	$(RM) $(NAME)
 
 re: fclean all
