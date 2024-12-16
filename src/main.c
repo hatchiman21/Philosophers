@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/15 22:52:22 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/16 05:14:43 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	kill_the_rest(t_philo *philos)
 
 	i = 0;
 	while (i < philos->philos_count)
-		philos->process[i++]->is_dead = 1;
+		philos->process[i++]->is_killed = 1;
 	i = 0;
 	while (i < philos->philos_count)
 	{
@@ -28,6 +28,7 @@ void	kill_the_rest(t_philo *philos)
 	i = 0;
 	while (i < philos->philos_count)
 		pthread_mutex_destroy(&philos->fork[i++]);
+	pthread_mutex_destroy(&philos->log_mutex);
 	free(philos->process);
 	free(philos->fork);
 	free(philos);
@@ -37,6 +38,7 @@ void	make_threads(t_philo *philo_data)
 {
 	int	i;
 
+	pthread_mutex_init(&philo_data->log_mutex, NULL);
 	i = 0;
 	while (i < philo_data->philos_count)
 		pthread_mutex_init(&philo_data->fork[i++], NULL);

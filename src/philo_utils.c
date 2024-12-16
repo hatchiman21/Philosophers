@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/15 22:51:48 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/16 04:30:00 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,9 @@ long	ft_atoi(const char *str)
 int	check_starvation(t_philo_process *process, int holding_forks, int next_fork)
 {
 	unsigned long	time_diff;
+	int				fork;
 
+	fork = process->philo_num;
 	gettimeofday(&process->time, NULL);
 	time_diff = (process->time.tv_sec - process->last_meal.tv_sec) * 1000
 		+ (process->time.tv_usec - process->last_meal.tv_usec);
@@ -58,7 +60,7 @@ int	check_starvation(t_philo_process *process, int holding_forks, int next_fork)
 	{
 		if (holding_forks)
 		{
-			pthread_mutex_unlock(&process->philo_data->fork[process->philo_num]);
+			pthread_mutex_unlock(&process->philo_data->fork[fork]);
 			pthread_mutex_unlock(&process->philo_data->fork[next_fork]);
 		}
 		process->philo_data->death = 1;

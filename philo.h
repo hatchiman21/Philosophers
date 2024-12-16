@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/15 22:53:34 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/16 05:08:12 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_philo_process
 	int				state;
 	int				philo_num;
 	int				is_dead;
+	int				is_killed;
 	struct s_philo	*philo_data;
 }					t_philo_process;
 
@@ -44,13 +45,15 @@ typedef struct s_philo
 	unsigned int	death;
 	t_philo_process	**process;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	log_mutex;
 }					t_philo;
 
 long	ft_atoi(const char *str);
 int		ft_isdigit(int c);
 void	philo_error_handling(t_philo *phil, int error);
 void	check_input(char *argv[], int argc);
-int		check_starvation(t_philo_process *process, int holding_forks, int next_fork);
+int		check_starvation(t_philo_process *process,
+			int holding_forks, int next_fork);
 
 void	kill_the_rest(t_philo *philos);
 void	*philo_life(void *arg);
