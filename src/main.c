@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/16 05:14:43 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/16 17:50:11 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void	make_threads(t_philo *philo_data)
 			philo_data->process[i]->state = SLEEPING;
 		pthread_create(&philo_data->process[i]->thread,
 			NULL, &philo_life, philo_data->process[i]);
+		usleep(1000);
 		i++;
 	}
 }
