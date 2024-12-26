@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/16 17:50:11 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/26 19:49:01 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ void	kill_the_rest(t_philo *philos)
 
 	i = 0;
 	while (i < philos->philos_count)
-		philos->process[i++]->is_killed = 1;
+	{
+		if (philos->process[i]->is_dead == 0)
+			philos->process[i]->is_killed = 1;
+		i++;
+	}
 	i = 0;
 	while (i < philos->philos_count)
 	{
@@ -59,7 +63,6 @@ void	make_threads(t_philo *philo_data)
 			philo_data->process[i]->state = SLEEPING;
 		pthread_create(&philo_data->process[i]->thread,
 			NULL, &philo_life, philo_data->process[i]);
-		usleep(1000);
 		i++;
 	}
 }
@@ -76,6 +79,7 @@ t_philo	*assign_philo(char *argv[])
 	philo_data->t_to_die = ft_atoi(argv[2]);
 	philo_data->t_to_eat = ft_atoi(argv[3]);
 	philo_data->t_to_sleep = ft_atoi(argv[4]);
+	philo_data->start_time = get_time_in_ms();
 	size = sizeof(t_philo_process *) * philo_data->philos_count;
 	philo_data->process = malloc(size);
 	if (!philo_data->process)
@@ -96,7 +100,7 @@ int	main(int argc, char *argv[])
 	philo_data = assign_philo(argv);
 	make_threads(philo_data);
 	while (philo_data->death == 0)
-		usleep(10);
+		usleep(1000);
 	kill_the_rest(philo_data);
 	return (0);
 }

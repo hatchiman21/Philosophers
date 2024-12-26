@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/16 04:30:00 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/26 18:55:56 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,7 @@ int	check_starvation(t_philo_process *process, int holding_forks, int next_fork)
 	int				fork;
 
 	fork = process->philo_num;
-	gettimeofday(&process->time, NULL);
-	time_diff = (process->time.tv_sec - process->last_meal.tv_sec) * 1000
-		+ (process->time.tv_usec - process->last_meal.tv_usec);
+	time_diff = get_time_in_ms() - process->last_meal;
 	if (time_diff >= process->philo_data->t_to_die)
 	{
 		if (holding_forks)

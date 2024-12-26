@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/16 05:08:12 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/26 18:24:23 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@
 typedef struct s_philo_process
 {
 	pthread_t		thread;
-	struct timeval	last_meal;
-	struct timeval	time;
+	long			last_meal;
+	long			time;
 	int				state;
 	int				philo_num;
 	int				is_dead;
@@ -43,12 +43,14 @@ typedef struct s_philo
 	unsigned int	t_to_eat;
 	unsigned int	t_to_sleep;
 	unsigned int	death;
+	long			start_time;
 	t_philo_process	**process;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	log_mutex;
 }					t_philo;
 
 long	ft_atoi(const char *str);
+long	get_time_in_ms(void);
 int		ft_isdigit(int c);
 void	philo_error_handling(t_philo *phil, int error);
 void	check_input(char *argv[], int argc);
