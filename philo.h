@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/26 18:24:23 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/27 07:07:41 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # define EATING 0
 # define THINKING 1
 # define SLEEPING 2
+# define RIGHT 1
+# define LEFT 2
 
 typedef struct s_philo_process
 {
@@ -52,6 +54,7 @@ typedef struct s_philo
 long	ft_atoi(const char *str);
 long	get_time_in_ms(void);
 int		ft_isdigit(int c);
+int		will_starve(void);
 void	philo_error_handling(t_philo *phil, int error);
 void	check_input(char *argv[], int argc);
 int		check_starvation(t_philo_process *process,

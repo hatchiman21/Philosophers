@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/26 18:55:56 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/27 07:07:32 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,26 @@ long	ft_atoi(const char *str)
 	return (res * sign);
 }
 
+int	will_starve(void)
+{
+	// long	time_to_die;
+	// long	time_to_wait;
+
+	// time_to_die = process->last_meal + process->philo_data->t_to_die;
+	// time_to_wait = get_time_in_ms() + process->philo_data->t_to_sleep;
+	// if (time_to_die < time_to_wait)
+		return (0);
+	// usleep(time_to_die - time_to_wait);
+	// pthread_mutex_lock(&process->philo_data->log_mutex);
+	// if (!process->is_killed && !process->is_dead)
+	// 	printf("%lu: Philosopher %d died\n", get_time_in_ms() - process->philo_data->start_time, process->philo_num + 1);
+	// usleep(2000);
+	// pthread_mutex_unlock(&process->philo_data->log_mutex);
+	// process->philo_data->death = 1;
+	// process->is_dead = 1;
+	return (1);
+}
+
 int	check_starvation(t_philo_process *process, int holding_forks, int next_fork)
 {
 	unsigned long	time_diff;
@@ -56,11 +76,17 @@ int	check_starvation(t_philo_process *process, int holding_forks, int next_fork)
 	time_diff = get_time_in_ms() - process->last_meal;
 	if (time_diff >= process->philo_data->t_to_die)
 	{
+		pthread_mutex_lock(&process->philo_data->log_mutex);
+		if (!process->is_killed && !process->is_dead)
+			printf("%lu: Philosopher %d died\n", get_time_in_ms()
+				- process->philo_data->start_time, process->philo_num + 1);
+		usleep(2000);
 		if (holding_forks)
 		{
 			pthread_mutex_unlock(&process->philo_data->fork[fork]);
 			pthread_mutex_unlock(&process->philo_data->fork[next_fork]);
 		}
+		pthread_mutex_unlock(&process->philo_data->log_mutex);
 		process->philo_data->death = 1;
 		process->is_dead = 1;
 		return (1);
