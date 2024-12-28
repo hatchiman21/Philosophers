@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 03:24:03 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 13:05:28 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,9 @@ long	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-void	forks_lock(t_philo_process *process, int fork1, int fork2)
+void	forks_lock(t_philo_process *process, int fork1,
+		int fork2, long *ideal_time)
 {
-	if (process->philo_data->philos_count <= 1)
-		return ;
 	while (!process->is_dead)
 	{
 		pthread_mutex_lock(&process->philo_data->fork[fork1].mutex);
@@ -66,6 +65,7 @@ void	forks_lock(t_philo_process *process, int fork1, int fork2)
 		if (process->philo_data->fork[fork1].is_used == 0
 			&& process->philo_data->fork[fork2].is_used == 0)
 		{
+			*ideal_time += get_time_in_ms() - *ideal_time;
 			process->philo_data->fork[fork1].is_used = 1;
 			process->philo_data->fork[fork2].is_used = 1;
 			pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
@@ -76,6 +76,5 @@ void	forks_lock(t_philo_process *process, int fork1, int fork2)
 		pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
 		if (check_starvation_inbetween(process))
 			return ;
-		usleep(100);
 	}
 }

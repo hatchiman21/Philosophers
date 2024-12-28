@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 04:59:07 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 13:05:36 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ long	get_time_in_ms(void);
 int		ft_isdigit(int c);
 void	philo_error_handling(t_philo *philo, int num, int error);
 void	check_input(char *argv[], int argc);
-void	forks_lock(t_philo_process *process, int fork1, int fork2);
+void	forks_lock(t_philo_process *process, int fork1,
+			int fork2, long *ideal_time);
 int		check_starvation_inbetween(t_philo_process *process);
 void	kill_the_rest(t_philo *philos);
 void	*philo_life(void *arg);

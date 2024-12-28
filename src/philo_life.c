@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:06 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 05:09:29 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 13:06:43 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	get_fork_num(t_philo_process *process, int *fork1, int *fork2)
 	}
 }
 
-void	philo_think_sleep(t_philo_process *process)
+void	philo_think_sleep(t_philo_process *process, long int *ideal_time)
 {
 	if (process->state == THINKING)
 	{
@@ -62,14 +62,14 @@ void	philo_think_sleep(t_philo_process *process)
 		pthread_mutex_unlock(&process->philo_data->log_mutex);
 		if (starvation_sleeping_check(process))
 			return ;
-	// printf("the difference between ideal and real time: %ld\n", *ideal_time - get_time_in_ms());
-		usleep((process->philo_data->t_to_sleep) * 1000);
-		// *ideal_time += process->philo_data->t_to_sleep;
+		usleep((process->philo_data->t_to_sleep
+				- get_time_in_ms() + *ideal_time) * 1000);
+		*ideal_time += process->philo_data->t_to_sleep;
 		process->state = THINKING;
 	}
 }
 
-void	philo_eat(t_philo_process *process)
+void	philo_eat(t_philo_process *process, long int *ideal_time)
 {
 	int	fork1;
 	int	fork2;
@@ -77,15 +77,16 @@ void	philo_eat(t_philo_process *process)
 	fork1 = 0;
 	fork2 = 0;
 	get_fork_num(process, &fork1, &fork2);
-	forks_lock(process, fork1, fork2);
-	process->last_meal = get_time_in_ms();
+	forks_lock(process, fork1, fork2, ideal_time);
 	pthread_mutex_lock(&process->philo_data->log_mutex);
+	process->last_meal = get_time_in_ms();
 	if (!process->is_dead)
-		printf("%lu: Philosopher %d is eating\n", process->last_meal - process->philo_data->start_time, process->philo_num + 1);
+		printf("%lu: Philosopher %d is eating\n", process->last_meal
+			- process->philo_data->start_time, process->philo_num + 1);
 	pthread_mutex_unlock(&process->philo_data->log_mutex);
-	// printf("time eaten: %ld\n", process->philo_data->t_to_eat + (*ideal_time - get_time_in_ms()));
-	usleep((process->philo_data->t_to_eat) * 1000);
-	// *ideal_time += process->philo_data->t_to_eat;
+	usleep((process->philo_data->t_to_eat
+			- get_time_in_ms() + *ideal_time) * 1000);
+	*ideal_time += process->philo_data->t_to_eat;
 	put_forks_back(process, fork1, fork2);
 	process->state = SLEEPING;
 }
@@ -106,23 +107,12 @@ void	*philo_life(void *arg)
 		return (NULL);
 	}
 	ideal_time = process->philo_data->start_time;
-	if (process->philo_num == 1)
-		printf("the difference between ideal and real time: %ld\n", ideal_time - get_time_in_ms());
 	while (!process->is_dead)
 	{
 		if (process->state == EATING)
-		{
-			ideal_time += process->philo_data->t_to_eat;
-			philo_eat(process);
-		}
+			philo_eat(process, &ideal_time);
 		else
-		{
-			if (process->state == SLEEPING)
-				ideal_time += process->philo_data->t_to_sleep;
-			philo_think_sleep(process);
-		}
-		if (process->philo_num == 1)
-			printf("the difference between ideal and real time: %ld\n", ideal_time - get_time_in_ms());
+			philo_think_sleep(process, &ideal_time);
 	}
 	return (NULL);
 }

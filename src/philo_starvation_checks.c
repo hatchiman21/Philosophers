@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:44:24 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 03:27:52 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 13:05:50 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	starvation_sleeping_check(t_philo_process *process)
 		{
 			usleep((time_left_to_die - time_now) * 1000);
 			pthread_mutex_lock(&process->philo_data->log_mutex);
-			printf("%lu: Philosopher %d died\n", get_time_in_ms() - process->philo_data->start_time, process->philo_num + 1);
+			printf("%lu: Philosopher %d died\n", get_time_in_ms()
+				- process->philo_data->start_time, process->philo_num + 1);
 			usleep(2000);
 			process->philo_data->death = 1;
 			process->is_dead = 1;
