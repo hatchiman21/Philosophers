@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 13:05:28 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 21:44:38 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,38 @@ long	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-void	forks_lock(t_philo_process *process, int fork1,
-		int fork2, long *ideal_time)
+void	fork2_lock(t_philo_process *process, int fork1, int fork2)
+{
+	process->philo_data->fork[fork1].is_used = 1;
+	pthread_mutex_lock(&process->philo_data->log_mutex);
+	if (!process->is_dead)
+		printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
+			- process->philo_data->start_time, process->philo_num + 1);
+	pthread_mutex_unlock(&process->philo_data->log_mutex);
+	pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+	pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+	process->fork1_check = 1;
+	while (!process->is_dead)
+	{
+		pthread_mutex_lock(&process->philo_data->fork[fork2].mutex);
+		if (process->philo_data->fork[fork2].is_used == 0)
+		{
+			process->philo_data->fork[fork2].is_used = 1;
+			printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
+				- process->philo_data->start_time, process->philo_num + 1);
+			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+			break ;
+		}
+		else
+		{
+			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+			if (check_starvation_inbetween(process, get_time_in_ms()))
+				break ;
+		}
+	}
+}
+
+void	forks_lock(t_philo_process *process, int fork1, int fork2)
 {
 	while (!process->is_dead)
 	{
@@ -65,16 +95,32 @@ void	forks_lock(t_philo_process *process, int fork1,
 		if (process->philo_data->fork[fork1].is_used == 0
 			&& process->philo_data->fork[fork2].is_used == 0)
 		{
-			*ideal_time += get_time_in_ms() - *ideal_time;
 			process->philo_data->fork[fork1].is_used = 1;
 			process->philo_data->fork[fork2].is_used = 1;
-			pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+			pthread_mutex_lock(&process->philo_data->log_mutex);
+			if (!process->is_dead)
+			{
+				printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
+					- process->philo_data->start_time, process->philo_num + 1);
+				printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
+					- process->philo_data->start_time, process->philo_num + 1);
+			}
+			pthread_mutex_unlock(&process->philo_data->log_mutex);
 			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+			pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
 			break ;
 		}
-		pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+		else if (process->philo_data->fork[fork1].is_used == 1
+			&& process->philo_data->fork[fork2].is_used == 2)
+		{
+			fork2_lock(process, fork2, fork1);
+			break ;
+		}
 		pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
-		if (check_starvation_inbetween(process))
-			return ;
+		if (!process->fork1_check)
+			pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+		if (check_starvation_inbetween(process, get_time_in_ms()))
+			break ;
 	}
+	process->fork1_check = 0;
 }

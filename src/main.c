@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/28 03:06:45 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 23:06:33 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,11 @@ void	kill_the_rest(t_philo *philos)
 
 	i = 0;
 	while (i < philos->philos_count)
+	{
+		pthread_mutex_lock(&philos->process[i]->is_dead_mutex);
 		philos->process[i++]->is_dead = 1;
+		pthread_mutex_unlock(&philos->process[i - 1]->is_dead_mutex);
+	}
 	i = 0;
 	while (i < philos->philos_count)
 	{
@@ -68,7 +72,11 @@ void	make_threads(t_philo *philo_data)
 		philo_data->process[i]->philo_num = i;
 		philo_data->process[i]->philo_data = philo_data;
 		philo_data->process[i]->is_dead = 0;
+		get_fork_num(philo_data->process[i],
+			&philo_data->process[i]->fork1, &philo_data->process[i]->fork2);
+		pthread_mutex_init(&philo_data->process[i]->is_dead_mutex, NULL);
 		philo_data->process[i]->state = EATING;
+		philo_data->process[i]->fork1_check = 0;
 		philo_data->process[i]->last_meal = philo_data->start_time;
 		i++;
 	}
@@ -100,6 +108,7 @@ t_philo	*assign_philo(char *argv[])
 	philo_data->process = malloc(size);
 	if (!philo_data->process)
 		philo_error_handling(philo_data, 0, 3);
+	pthread_mutex_init(&philo_data->death_mutex, NULL);
 	philo_data->death = 0;
 	philo_data->fork = NULL;
 	size = sizeof(t_eating_fork) * philo_data->philos_count;
@@ -126,8 +135,16 @@ int	main(int argc, char *argv[])
 			philo_error_handling(philo_data, i - 1, 6);
 	}
 	make_threads(philo_data);
-	while (philo_data->death == 0)
-		usleep(1000);
+	while (1)
+	{
+		pthread_mutex_lock(&philo_data->death_mutex);
+		if (philo_data->death)
+		{
+			pthread_mutex_unlock(&philo_data->death_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&philo_data->death_mutex);
+	}
 	kill_the_rest(philo_data);
 	return (0);
 }
