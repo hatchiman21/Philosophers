@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/27 22:24:42 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 03:24:03 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,27 @@ long	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-void	forks_lock(t_philo_process *process, int next_fork)
+void	forks_lock(t_philo_process *process, int fork1, int fork2)
 {
-	if (process->philo_num % 2 == 0 && process->philo_data->philos_count > 1
-		&& process->is_killed == 0)
+	if (process->philo_data->philos_count <= 1)
+		return ;
+	while (!process->is_dead)
 	{
-		pthread_mutex_lock(&process->philo_data->fork[process->philo_num].mutex);
-		pthread_mutex_lock(&process->philo_data->fork[next_fork].mutex);
-	}
-	else if (process->philo_data->philos_count > 1 && process->is_killed == 0)
-	{
-		pthread_mutex_lock(&process->philo_data->fork[next_fork].mutex);
-		pthread_mutex_lock(&process->philo_data->fork[process->philo_num].mutex);
+		pthread_mutex_lock(&process->philo_data->fork[fork1].mutex);
+		pthread_mutex_lock(&process->philo_data->fork[fork2].mutex);
+		if (process->philo_data->fork[fork1].is_used == 0
+			&& process->philo_data->fork[fork2].is_used == 0)
+		{
+			process->philo_data->fork[fork1].is_used = 1;
+			process->philo_data->fork[fork2].is_used = 1;
+			pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
+		pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
+		if (check_starvation_inbetween(process))
+			return ;
+		usleep(100);
 	}
 }

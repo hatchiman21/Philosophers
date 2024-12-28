@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/27 22:28:16 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 03:06:45 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,7 @@ void	kill_the_rest(t_philo *philos)
 
 	i = 0;
 	while (i < philos->philos_count)
-	{
-		if (philos->process[i]->is_dead == 0)
-			philos->process[i]->is_killed = 1;
-		i++;
-	}
+		philos->process[i++]->is_dead = 1;
 	i = 0;
 	while (i < philos->philos_count)
 	{
@@ -74,7 +70,6 @@ void	make_threads(t_philo *philo_data)
 		philo_data->process[i]->is_dead = 0;
 		philo_data->process[i]->state = EATING;
 		philo_data->process[i]->last_meal = philo_data->start_time;
-		philo_data->process[i]->is_killed = 0;
 		i++;
 	}
 	i = 0;
@@ -125,8 +120,11 @@ int	main(int argc, char *argv[])
 		philo_error_handling(philo_data, 0, 5);
 	i = 0;
 	while (i < philo_data->philos_count)
+	{
+		philo_data->fork[i].is_used = 0;
 		if (pthread_mutex_init(&philo_data->fork[i++].mutex, NULL) != 0)
 			philo_error_handling(philo_data, i - 1, 6);
+	}
 	make_threads(philo_data);
 	while (philo_data->death == 0)
 		usleep(1000);

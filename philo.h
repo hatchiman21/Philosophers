@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/27 22:21:44 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 04:59:07 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_philo_process
 	int				state;
 	int				philo_num;
 	int				is_dead;
-	int				is_killed;
 	struct s_philo	*philo_data;
 }					t_philo_process;
 
@@ -56,16 +55,14 @@ typedef struct s_philo
 	pthread_mutex_t	log_mutex;
 }					t_philo;
 
-void	starvation_sleeping_check(t_philo_process *process);
+int		starvation_sleeping_check(t_philo_process *process);
 long	ft_atoi(const char *str);
 long	get_time_in_ms(void);
 int		ft_isdigit(int c);
 void	philo_error_handling(t_philo *philo, int num, int error);
 void	check_input(char *argv[], int argc);
-void	forks_lock(t_philo_process *process, int next_fork);
-// int		check_starvation_inbetween(t_philo_process *process,
-// 			int holding_forks, int next_fork);
-int		check_starvation_while_wating(t_philo *philo_data, int philo_num);
+void	forks_lock(t_philo_process *process, int fork1, int fork2);
+int		check_starvation_inbetween(t_philo_process *process);
 void	kill_the_rest(t_philo *philos);
 void	*philo_life(void *arg);
 

@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:12:55 by aatieh            #+#    #+#             */
-/*   Updated: 2024/12/27 22:28:27 by aatieh           ###   ########.fr       */
+/*   Updated: 2024/12/28 02:01:21 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	philo_thread_error_handling(t_philo *philo, int num, int error)
 	{
 		i = 0;
 		while (i <= num)
-			philo->process[i++]->is_killed = 1;
+			philo->process[i++]->is_dead = 1;
 		i = 0;
 		while (i <= num)
 			pthread_join(philo->process[i++]->thread, NULL);
