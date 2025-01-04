@@ -48,7 +48,7 @@ void	philo_think_sleep(t_philo_process *process)
 	}
 }
 
-void	*routine(void *arg)
+void	routine(void *arg)
 {
 	t_philo_process	*process;
 
@@ -70,5 +70,5 @@ void	*routine(void *arg)
 		else
 			philo_think_sleep(process);
 	}
-	return (NULL);
+	exit(0);
 }

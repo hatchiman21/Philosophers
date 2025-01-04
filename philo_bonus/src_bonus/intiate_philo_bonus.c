@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 05:52:22 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:14:29 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/04 20:58:39 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@ void	creat_threads(t_philo *philo_data)
 	while (i < philo_data->philos_count)
 	{
 		process = philo_data->process[i];
-		if (pthread_create(&process->thread, NULL, &routine, process) != 0)
-			philo_error_handling(philo_data, i, 10);
+		process->id = fork();
+		if (!process->id)
+			routine(process);
 		i++;
 	}
 }
 
-void	make_threads(t_philo *philo_data)
+void	create_processes(t_philo *philo_data)
 {
 	int				i;
 	t_philo_process	*process;
@@ -42,8 +43,6 @@ void	make_threads(t_philo *philo_data)
 		process = philo_data->process[i];
 		process->philo_num = i;
 		process->philo_data = philo_data;
-		get_fork_num(process,
-			&process->fork1, &process->fork2);
 		process->state = EATING;
 		process->last_meal = philo_data->start_time;
 		process->meals = 0;
@@ -52,23 +51,17 @@ void	make_threads(t_philo *philo_data)
 	creat_threads(philo_data);
 }
 
-void	intiate_philo_mutex(t_philo *philo_data)
+void	intiate_philo_seph(t_philo *philo_data)
 {
-	int	i;
-
-	if (pthread_mutex_init(&philo_data->log_mutex, NULL) != 0)
-		philo_error_handling(philo_data, 0, 5);
-	i = 0;
-	if (pthread_mutex_init(&philo_data->sim_stop_mutex, NULL) != 0)
-		philo_error_handling(philo_data, 0, 6);
-	if (pthread_mutex_init(&philo_data->meal_mutex, NULL) != 0)
-		philo_error_handling(philo_data, 0, 7);
-	while (i < philo_data->philos_count)
-	{
-		philo_data->fork[i].is_used = 0;
-		if (pthread_mutex_init(&philo_data->fork[i++].mutex, NULL) != 0)
-			philo_error_handling(philo_data, i - 1, 8);
-	}
+	philo_data->log_mutex = sem_open("log", O_CREAT, 0644, 1);
+	philo_data->sim_stop_mutex = sem_open("sim_stop", O_CREAT, 0644, 1);
+	philo_data->meal_mutex = sem_open("meal", O_CREAT, 0644, 1);
+	// if (pthread_mutex_init(&philo_data->log_mutex, NULL) != 0)
+	// 	philo_error_handling(philo_data, 0, 5);
+	// if (pthread_mutex_init(&philo_data->sim_stop_mutex, NULL) != 0)
+	// 	philo_error_handling(philo_data, 0, 6);
+	// if (pthread_mutex_init(&philo_data->meal_mutex, NULL) != 0)
+	// 	philo_error_handling(philo_data, 0, 7);
 }
 
 void	get_values(t_philo *philo_data, char *argv[], int argc)
@@ -102,12 +95,13 @@ t_philo	*assign_philo(char *argv[], int argc)
 			* philo_data->philos_count);
 	if (!philo_data->process)
 		philo_error_handling(philo_data, 0, 3);
-	philo_data->fork = NULL;
-	philo_data->fork = malloc(sizeof(t_eating_fork)
-			* philo_data->philos_count);
-	if (!philo_data->fork)
-		philo_error_handling(philo_data, 0, 4);
-	intiate_philo_mutex(philo_data);
+	philo_data->fork = sem_open(philo_data->philos_count, O_CREAT, 0644, philo_data->philos_count);
+	// philo_data->fork = NULL;
+	// philo_data->fork = malloc(sizeof(t_eating_fork)
+	// 		* philo_data->philos_count);
+	// if (!philo_data->fork)
+	// 	philo_error_handling(philo_data, 0, 4);
+	intiate_philo_seph(philo_data);
 	philo_data->sim_stop = 0;
 	return (philo_data);
 }

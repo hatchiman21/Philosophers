@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:14:29 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/04 21:00:21 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,19 @@ void	stop_simulation(t_philo *philos)
 	pthread_mutex_lock(&philos->sim_stop_mutex);
 	philos->sim_stop = 1;
 	pthread_mutex_unlock(&philos->sim_stop_mutex);
+	while (1)
+	{
+		if (waitpid(-1, NULL, 0) == -1)
+			break ;
+	}
 	while (i < philos->philos_count)
 	{
-		pthread_join(philos->process[i]->thread, NULL);
-		free(philos->process[i++]);
+		kill(philos->process[i]->id, SIGKILL);
+		i++;
 	}
-	i = 0;
-	while (i < philos->philos_count)
-		pthread_mutex_destroy(&philos->fork[i++].mutex);
+	// i = 0;
+	// while (i < philos->philos_count)
+	// 	pthread_mutex_destroy(&philos->fork[i++].mutex);
 	pthread_mutex_destroy(&philos->log_mutex);
 	pthread_mutex_destroy(&philos->sim_stop_mutex);
 	pthread_mutex_destroy(&philos->meal_mutex);
@@ -96,7 +101,7 @@ int	main(int argc, char *argv[])
 
 	check_input(argv, argc);
 	philo_data = assign_philo(argv, argc);
-	make_threads(philo_data);
+	create_processes(philo_data);
 	while (philo_data->start_time > get_time_in_ms())
 		continue ;
 	main_thread_loop(philo_data, 0, 0);

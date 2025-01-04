@@ -13,12 +13,13 @@
 #ifndef PHILO_BONUS_H
 # define PHILO_BONUS_H
 
-# include <pthread.h>
 # include <sys/time.h>
 # include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <semaphore.h>
 
 # define EATING 0
 # define THINKING 1
@@ -30,21 +31,13 @@
 
 typedef struct s_philo_process
 {
-	pthread_t		thread;
+	int				id;
 	long			last_meal;
 	int				state;
 	int				philo_num;
 	int				meals;
-	int				fork1;
-	int				fork2;
 	struct s_philo	*philo_data;
 }					t_philo_process;
-
-typedef struct s_eating_fork
-{
-	int				is_used;
-	pthread_mutex_t	mutex;
-}					t_eating_fork;
 
 typedef struct s_philo
 {
@@ -56,11 +49,11 @@ typedef struct s_philo
 	int				limited_meals;
 	int				sim_stop;
 	long			start_time;
-	t_eating_fork	*fork;
+	sem_t			*fork;
+	sem_t			*sim_stop_mutex;
+	sem_t			*meal_mutex;
+	sem_t			*log_mutex;
 	t_philo_process	**process;
-	pthread_mutex_t	sim_stop_mutex;
-	pthread_mutex_t	meal_mutex;
-	pthread_mutex_t	log_mutex;
 }					t_philo;
 
 long	ft_atoi(const char *str);
@@ -81,7 +74,7 @@ int		check_starvation_and_meals(t_philo_process *process,
 void	check_input(char *argv[], int argc);
 void	philo_error_handling(t_philo *philo, int num, int error);
 t_philo	*assign_philo(char *argv[], int argc);
-void	make_threads(t_philo *philo_data);
-void	*routine(void *arg);
+void	create_processes(t_philo *philo_data);
+void	routine(void *arg);
 
 #endif
