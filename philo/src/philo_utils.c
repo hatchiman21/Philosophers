@@ -6,40 +6,40 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 07:48:56 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/04 20:17:34 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-void	write_message(t_philo_process *philo, char *msg)
+void	write_message(t_philo_process *process, char *msg)
 {
 	printf("%lu ms Philosopher %d %s\n", get_time_in_ms()
-		- philo->philo_data->start_time, philo->philo_num + 1, msg);
+		- process->philo_data->start_time, process->philo_num + 1, msg);
 }
 
-void	write_status(t_philo_process *philo, int status)
+void	write_status(t_philo_process *process, t_philo *philo_data, int status)
 {
-	pthread_mutex_lock(&philo->philo_data->log_mutex);
-	pthread_mutex_lock(&philo->philo_data->sim_stop_mutex);
-	if (philo->philo_data->sim_stop)
+	pthread_mutex_lock(&philo_data->log_mutex);
+	pthread_mutex_lock(&philo_data->sim_stop_mutex);
+	if (philo_data->sim_stop)
 	{
-		pthread_mutex_unlock(&philo->philo_data->sim_stop_mutex);
-		pthread_mutex_unlock(&philo->philo_data->log_mutex);
+		pthread_mutex_unlock(&philo_data->sim_stop_mutex);
+		pthread_mutex_unlock(&philo_data->log_mutex);
 		return ;
 	}
-	pthread_mutex_unlock(&philo->philo_data->sim_stop_mutex);
+	pthread_mutex_unlock(&philo_data->sim_stop_mutex);
 	if (status == HELD_FORK)
-		write_message(philo, "has taken a fork");
+		write_message(process, "has taken a fork");
 	else if (status == EATING)
-		write_message(philo, "is eating");
+		write_message(process, "is eating");
 	else if (status == THINKING)
-		write_message(philo, "is thinking");
+		write_message(process, "is thinking");
 	else if (status == SLEEPING)
-		write_message(philo, "is sleeping");
+		write_message(process, "is sleeping");
 	else if (status == DEAD)
-		write_message(philo, "died");
-	pthread_mutex_unlock(&philo->philo_data->log_mutex);
+		write_message(process, "died");
+	pthread_mutex_unlock(&philo_data->log_mutex);
 }
 
 int	ft_isdigit(int c)

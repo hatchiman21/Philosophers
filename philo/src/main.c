@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:07:34 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/04 20:18:30 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ void	main_thread_loop(t_philo *philo_data, int i, int eaten_enough)
 		while (i < philo_data->philos_count)
 		{
 			if (check_starvation_and_meals(philo_data->process[i],
-					get_time_in_ms(), &eaten_enough))
+					philo_data, get_time_in_ms(), &eaten_enough))
 			{
-				write_status(philo_data->process[i], DEAD);
+				write_status(philo_data->process[i], philo_data, DEAD);
 				stop_simulation(philo_data);
 				return ;
 			}
