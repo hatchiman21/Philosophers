@@ -1,8 +1,9 @@
-SRC_DIR = src
-OBJS_DIR = obj
+SRC_DIR = src_bonus
+OBJS_DIR = obj_bonus
 
-SRCS = main.c philo_life.c philo_utils.c philo_errors.c philo_starvation_checks.c
+SRCS = main routine philo_utils philo_errors philo_starvation_checks setup_forks intiate_philo
 SRCS:= $(addprefix $(SRC_DIR)/, $(SRCS))
+SRCS:= $(addsuffix _bonus.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJS_DIR)/%.o)
 
 CC = cc
@@ -12,7 +13,7 @@ NAME = philo_bonus
 
 all: $(NAME)
 
-$(NAME): $(OBJS) philo.h
+$(NAME): $(OBJS) philo_bonus.h
 	$(CC) $(OBJS) -o $(NAME) $(CFLAGS)
 
 $(OBJS_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJS_DIR)

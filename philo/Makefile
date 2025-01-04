@@ -1,7 +1,7 @@
 SRC_DIR = src
 OBJS_DIR = obj
 
-SRCS = main.c philo_life.c philo_utils.c philo_errors.c philo_starvation_checks.c
+SRCS = main.c routine.c philo_utils.c philo_errors.c philo_starvation_checks.c setup_forks.c intiate_philo.c
 SRCS:= $(addprefix $(SRC_DIR)/, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJS_DIR)/%.o)
 

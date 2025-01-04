@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/01 17:40:17 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/04 07:48:56 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,7 @@ void	write_status(t_philo_process *philo, int status)
 	else if (status == SLEEPING)
 		write_message(philo, "is sleeping");
 	else if (status == DEAD)
-	{
-		pthread_mutex_lock(&philo->philo_data->sim_stop_mutex);
-		philo->philo_data->sim_stop = 1;
-		pthread_mutex_unlock(&philo->philo_data->sim_stop_mutex);
 		write_message(philo, "died");
-	}
 	pthread_mutex_unlock(&philo->philo_data->log_mutex);
 }
 
@@ -89,42 +84,3 @@ long	ft_atoi(const char *str)
 	}
 	return (res * sign);
 }
-
-// void	fork2_lock(t_philo_process *process, int fork1, int fork2)
-// {
-// 	process->philo_data->fork[fork1].is_used = 1;
-// 	pthread_mutex_lock(&process->philo_data->log_mutex);
-// 	if (!process->is_dead)
-// 		printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
-// 			- process->philo_data->start_time, process->philo_num + 1);
-// 	pthread_mutex_unlock(&process->philo_data->log_mutex);
-// 	pthread_mutex_unlock(&process->philo_data->fork[fork1].mutex);
-// 	pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
-// 	process->fork1_check = 1;
-// 	while (!process->is_dead)
-// 	{
-// 		pthread_mutex_lock(&process->philo_data->fork[fork2].mutex);
-// 		if (process->philo_data->fork[fork2].is_used == 0)
-// 		{
-// 			process->philo_data->fork[fork2].is_used = 1;
-// 			printf("%lu: Philosopher %d has taken a fork\n", get_time_in_ms()
-// 				- process->philo_data->start_time, process->philo_num + 1);
-// 			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
-// 			break ;
-// 		}
-// 		else
-// 		{
-// 			pthread_mutex_unlock(&process->philo_data->fork[fork2].mutex);
-// 			if (check_starvation_inbetween(process, get_time_in_ms()))
-// 				break ;
-// 		}
-// 	}
-// }
-
-// void	forks_lock(t_philo_process *process, int fork1, int fork2)
-// {
-// 	pthread_mutex_lock(&process->philo_data->fork[fork1].mutex);
-// 	write_status(process, HELD_FORK);
-// 	pthread_mutex_lock(&process->philo_data->fork[fork2].mutex);
-// 	write_status(process, HELD_FORK);
-// }
