@@ -14,9 +14,9 @@
 
 void	update_last_meal_and_deat_time(t_philo_process *process,long *last_meal ,long *time_of_death)
 {
-	sem_wait(process->meal_sem);
+	sem_wait(process->philo_data->meal_sem);
 	*last_meal = process->last_meal;
-	sem_post(process->meal_sem);
+	sem_post(process->philo_data->meal_sem);
 	*time_of_death = process->philo_data->t_to_die + *last_meal;
 }
 
@@ -51,10 +51,10 @@ void	philo_eat(t_philo_process *process)
 	sem_wait(process->philo_data->fork);
 	write_status(process, HELD_FORK);
 	write_status(process, EATING);
-	sem_wait(process->meal_sem);
+	sem_wait(process->philo_data->meal_sem);
 	process->meals++;
 	process->last_meal = get_time_in_ms();
-	sem_post(process->meal_sem);
+	sem_post(process->philo_data->meal_sem);
 	my_usleep(process, process->philo_data->t_to_eat);
 	sem_post(process->philo_data->fork);
 	sem_post(process->philo_data->fork);

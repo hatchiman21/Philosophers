@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 07:34:53 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:31:34 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,13 @@ void	stop_simulation(t_philo *philos)
 	sem_close(philos->fork);
 	sem_close(philos->log_sem);
 	sem_close(philos->sim_stop_sem);
-	// sem_close(philos->meal_sem);
 	sem_close(philos->can_eat);
 	sem_close(philos->sim_already_stopped);
+	sem_close(philos->meal_sem);
+	sem_unlink("meal");
 	sem_unlink("sim_already_stopped");
 	sem_unlink("log");
 	sem_unlink("sim_stop");
-	// sem_unlink("meal");
 	sem_unlink("fork");
 	sem_unlink("can_eat");
 	free(philos->process);

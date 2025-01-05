@@ -1,7 +1,7 @@
 SRC_DIR = src_bonus
 OBJS_DIR = obj_bonus
 
-SRCS = main routine philo_utils philo_errors philo_starvation_checks setup_forks intiate_philo
+SRCS = main routine philo_utils philo_errors philo_starvation_checks intiate_philo
 SRCS:= $(addprefix $(SRC_DIR)/, $(SRCS))
 SRCS:= $(addsuffix _bonus.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJS_DIR)/%.o)

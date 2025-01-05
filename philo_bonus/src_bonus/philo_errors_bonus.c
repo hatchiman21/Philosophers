@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:12:55 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 07:31:23 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:46:08 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,28 @@ void	philo_thread_error_handling(t_philo *philo, int num, int error)
 	}
 	if (error >= 7)
 		sem_destroy(philo->sim_stop_sem);
+}
+
+void	philo_sem_clean(t_philo *philo_data)
+{
+	if (philo_data->fork != SEM_FAILED)
+		sem_close(philo_data->fork);
+	if (philo_data->log_sem != SEM_FAILED)
+		sem_close(philo_data->log_sem);
+	if (philo_data->sim_stop_sem != SEM_FAILED)
+		sem_close(philo_data->sim_stop_sem);
+	if (philo_data->can_eat != SEM_FAILED)
+		sem_close(philo_data->can_eat);
+	if (philo_data->sim_already_stopped != SEM_FAILED)
+		sem_close(philo_data->sim_already_stopped);
+	if (philo_data->meal_sem != SEM_FAILED)
+		sem_close(philo_data->meal_sem);
+	sem_unlink("log");
+	sem_unlink("sim_stop");
+	sem_unlink("can_eat");
+	sem_unlink("sim_already_stopped");
+	sem_unlink("fork");
+	sem_unlink("meal");
 }
 
 void	philo_error_handling(t_philo *philo, int num, int error)

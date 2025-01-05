@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 05:52:22 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 08:42:30 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:36:44 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,6 @@ void	create_processes(t_philo *philo_data)
 		if (!philo_data->process[i])
 			philo_error_handling(philo_data, i, 9);
 		process = philo_data->process[i];
-		process->meal_sem_name = ft_itoa(process->id);
-		sem_unlink(process->meal_sem_name);
-		process->meal_sem = sem_open(process->meal_sem_name, O_CREAT, 0644, 1);
-		free(process->meal_sem_name);
 		process->philo_num = i;
 		process->philo_data = philo_data;
 		process->state = EATING;
@@ -103,23 +99,29 @@ void	create_processes(t_philo *philo_data)
 	creat_threads(philo_data);
 }
 
-void	intiate_philo_seph(t_philo *philo_data)
+void	initiate_philo_seph(t_philo *philo_data)
 {
-	int	can_eat;
+	int		can_eat;
 
 	sem_unlink("log");
 	sem_unlink("sim_stop");
 	sem_unlink("fork");
 	sem_unlink("can_eat");
 	sem_unlink("sim_already_stopped");
+	sem_unlink("meal");
 	can_eat = philo_data->philos_count / 2 + philo_data->philos_count % 2;
 	philo_data->can_eat = sem_open("can_eat", O_CREAT, 0644, can_eat);
 	philo_data->sim_already_stopped = sem_open("sim_already_stopped",
 			O_CREAT, 0644, 1);
+	philo_data->meal_sem = sem_open("meal", O_CREAT, 0644, 1);
 	philo_data->log_sem = sem_open("log", O_CREAT, 0644, 1);
 	philo_data->sim_stop_sem = sem_open("sim_stop", O_CREAT, 0644, 0);
 	philo_data->fork = sem_open("fork", O_CREAT, 0644,
 			philo_data->philos_count);
+	if (philo_data->fork == SEM_FAILED || philo_data->log_sem == SEM_FAILED
+		|| philo_data->sim_stop_sem == SEM_FAILED || philo_data->meal_sem == SEM_FAILED
+		|| philo_data->can_eat == SEM_FAILED || philo_data->sim_already_stopped == SEM_FAILED)
+		philo_error_handling(philo_data, 0, 4);
 }
 
 void	get_values(t_philo *philo_data, char *argv[], int argc)
@@ -153,7 +155,7 @@ t_philo	*assign_philo(char *argv[], int argc)
 			* philo_data->philos_count);
 	if (!philo_data->process)
 		philo_error_handling(philo_data, 0, 3);
-	intiate_philo_seph(philo_data);
+	initiate_philo_seph(philo_data);
 	philo_data->sim_stop = 0;
 	return (philo_data);
 }

@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 07:37:45 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:46:50 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,10 @@
 typedef struct s_philo_process
 {
 	int				id;
-	char			*meal_sem_name;
 	long			last_meal;
 	int				state;
 	int				philo_num;
 	int				meals;
-	sem_t			*meal_sem;
 	struct s_philo	*philo_data;
 }					t_philo_process;
 
@@ -54,6 +52,7 @@ typedef struct s_philo
 	int				limited_meals;
 	int				sim_stop;
 	long			start_time;
+	sem_t			*meal_sem;
 	sem_t			*fork;
 	sem_t			*sim_stop_sem;
 	sem_t			*log_sem;
@@ -73,6 +72,7 @@ int		check_starvation(t_philo_process *process, long time_now);
 int		check_starvation_and_meals(t_philo_process *process,
 			t_philo *philo_data, long time_now, int *eaten_enough);
 
+void	philo_sem_clean(t_philo *philo_data);
 void	check_input(char *argv[], int argc);
 void	philo_error_handling(t_philo *philo, int num, int error);
 t_philo	*assign_philo(char *argv[], int argc);

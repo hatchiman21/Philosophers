@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:44:24 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 07:43:15 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 20:24:50 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ int	check_starvation_and_meals(t_philo_process *process,
 
 int	check_starvation(t_philo_process *process, long time_now)
 {
-	sem_wait(process->meal_sem);
+	sem_wait(process->philo_data->meal_sem);
 	if (time_now - process->last_meal > process->philo_data->t_to_die)
 	{
-		sem_post(process->meal_sem);
+		sem_post(process->philo_data->meal_sem);
 		write_status(process, DEAD);
 		return (1);
 	}
-	sem_post(process->meal_sem);
+	sem_post(process->philo_data->meal_sem);
 	return (0);
 }
 
