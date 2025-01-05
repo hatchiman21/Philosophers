@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:12:55 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:14:29 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 07:31:23 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ void	philo_error_message(int error)
 	else if (error == 4)
 		write(2, "pthread fork malloc failed\n", 28);
 	else if (error == 5)
-		write(2, "log mutex failed\n", 18);
+		write(2, "log sem failed\n", 16);
 	else if (error == 6)
-		write(2, "sim_stop mutex failed\n", 23);
+		write(2, "sim_stop sem failed\n", 21);
 	else if (error == 7)
-		write(2, "meal mutex failed\n", 19);
+		write(2, "meal sem failed\n", 17);
 	else if (error == 8)
-		write(2, "fork mutex failed\n", 19);
+		write(2, "fork sem failed\n", 17);
 	else if (error == 9)
 		write(2, "process malloc failed\n", 23);
 	else if (error == 10)
@@ -42,12 +42,7 @@ void	philo_thread_error_handling(t_philo *philo, int num, int error)
 
 	if (error == 10)
 	{
-		pthread_mutex_lock(&philo->sim_stop_mutex);
-		philo->sim_stop = 1;
-		pthread_mutex_unlock(&philo->sim_stop_mutex);
-		i = 0;
-		while (i <= num)
-			pthread_join(philo->process[i++]->thread, NULL);
+		kill(0, SIGKILL);
 	}
 	i = 0;
 	while (error > 9 && i < philo->philos_count)
@@ -55,14 +50,12 @@ void	philo_thread_error_handling(t_philo *philo, int num, int error)
 	while (error == 9 && i < num)
 		free(philo->process[i++]);
 	if (error >= 8)
-		pthread_mutex_destroy(&philo->meal_mutex);
-	i = 0;
-	while (error == 8 && (i < num))
-		pthread_mutex_destroy(&philo->fork[i++].mutex);
-	while (error > 8 && (i < philo->philos_count))
-		pthread_mutex_destroy(&philo->fork[i++].mutex);
+	{
+		// sem_destroy(philo->meal_sem);
+		sem_destroy(philo->sim_stop_sem);
+	}
 	if (error >= 7)
-		pthread_mutex_destroy(&philo->sim_stop_mutex);
+		sem_destroy(philo->sim_stop_sem);
 }
 
 void	philo_error_handling(t_philo *philo, int num, int error)
@@ -76,7 +69,7 @@ void	philo_error_handling(t_philo *philo, int num, int error)
 				if (error >= 6)
 				{
 					philo_thread_error_handling(philo, num, error);
-					pthread_mutex_destroy(&philo->log_mutex);
+					sem_destroy(philo->log_sem);
 				}
 				free(philo->fork);
 			}

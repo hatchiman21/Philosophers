@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:14:29 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 06:21:53 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,9 @@ void	write_message(t_philo_process *philo, char *msg)
 
 void	write_status(t_philo_process *philo, int status)
 {
-	pthread_mutex_lock(&philo->philo_data->log_mutex);
-	pthread_mutex_lock(&philo->philo_data->sim_stop_mutex);
-	if (philo->philo_data->sim_stop)
-	{
-		pthread_mutex_unlock(&philo->philo_data->sim_stop_mutex);
-		pthread_mutex_unlock(&philo->philo_data->log_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->philo_data->sim_stop_mutex);
+	sem_wait(philo->philo_data->log_sem);
+	sem_wait(philo->philo_data->sim_already_stopped);
+	sem_post(philo->philo_data->sim_already_stopped);
 	if (status == HELD_FORK)
 		write_message(philo, "has taken a fork");
 	else if (status == EATING)
@@ -38,8 +32,12 @@ void	write_status(t_philo_process *philo, int status)
 	else if (status == SLEEPING)
 		write_message(philo, "is sleeping");
 	else if (status == DEAD)
+	{
 		write_message(philo, "died");
-	pthread_mutex_unlock(&philo->philo_data->log_mutex);
+		sem_post(philo->philo_data->sim_stop_sem);
+		sem_wait(philo->philo_data->sim_already_stopped);
+	}
+	sem_post(philo->philo_data->log_sem);
 }
 
 int	ft_isdigit(int c)

@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 21:00:21 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 07:34:53 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,27 +43,25 @@ void	stop_simulation(t_philo *philos)
 	int	i;
 
 	i = 0;
-	pthread_mutex_lock(&philos->sim_stop_mutex);
-	philos->sim_stop = 1;
-	pthread_mutex_unlock(&philos->sim_stop_mutex);
-	while (1)
-	{
-		if (waitpid(-1, NULL, 0) == -1)
-			break ;
-	}
 	while (i < philos->philos_count)
 	{
 		kill(philos->process[i]->id, SIGKILL);
+		free(philos->process[i]);
 		i++;
 	}
-	// i = 0;
-	// while (i < philos->philos_count)
-	// 	pthread_mutex_destroy(&philos->fork[i++].mutex);
-	pthread_mutex_destroy(&philos->log_mutex);
-	pthread_mutex_destroy(&philos->sim_stop_mutex);
-	pthread_mutex_destroy(&philos->meal_mutex);
+	sem_close(philos->fork);
+	sem_close(philos->log_sem);
+	sem_close(philos->sim_stop_sem);
+	// sem_close(philos->meal_sem);
+	sem_close(philos->can_eat);
+	sem_close(philos->sim_already_stopped);
+	sem_unlink("sim_already_stopped");
+	sem_unlink("log");
+	sem_unlink("sim_stop");
+	// sem_unlink("meal");
+	sem_unlink("fork");
+	sem_unlink("can_eat");
 	free(philos->process);
-	free(philos->fork);
 	free(philos);
 }
 
@@ -71,6 +69,9 @@ void	main_thread_loop(t_philo *philo_data, int i, int eaten_enough)
 {
 	while (1)
 	{
+		sem_wait(philo_data->sim_stop_sem);
+		stop_simulation(philo_data);
+		return ;
 		if (philo_data->limited_meals)
 			eaten_enough = 1;
 		else
@@ -79,9 +80,8 @@ void	main_thread_loop(t_philo *philo_data, int i, int eaten_enough)
 		while (i < philo_data->philos_count)
 		{
 			if (check_starvation_and_meals(philo_data->process[i],
-					get_time_in_ms(), &eaten_enough))
+					philo_data, get_time_in_ms(), &eaten_enough))
 			{
-				write_status(philo_data->process[i], DEAD);
 				stop_simulation(philo_data);
 				return ;
 			}
@@ -89,6 +89,7 @@ void	main_thread_loop(t_philo *philo_data, int i, int eaten_enough)
 		}
 		if (eaten_enough)
 		{
+			sem_wait(philo_data->sim_stop_sem);
 			stop_simulation(philo_data);
 			return ;
 		}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_bonus.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 08:10:18 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/05 07:37:45 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <pthread.h>
 # include <semaphore.h>
+# include <sys/types.h>
+# include <signal.h>
 
 # define EATING 0
 # define THINKING 1
@@ -32,10 +35,12 @@
 typedef struct s_philo_process
 {
 	int				id;
+	char			*meal_sem_name;
 	long			last_meal;
 	int				state;
 	int				philo_num;
 	int				meals;
+	sem_t			*meal_sem;
 	struct s_philo	*philo_data;
 }					t_philo_process;
 
@@ -50,9 +55,10 @@ typedef struct s_philo
 	int				sim_stop;
 	long			start_time;
 	sem_t			*fork;
-	sem_t			*sim_stop_mutex;
-	sem_t			*meal_mutex;
-	sem_t			*log_mutex;
+	sem_t			*sim_stop_sem;
+	sem_t			*log_sem;
+	sem_t			*can_eat;
+	sem_t			*sim_already_stopped;
 	t_philo_process	**process;
 }					t_philo;
 
@@ -63,13 +69,9 @@ long	get_time_in_ms(void);
 int		my_usleep(t_philo_process *process, int time);
 void	write_status(t_philo_process *philo, int status);
 
-void	get_fork_num(t_philo_process *process, int *fork1, int *fork2);
-void	grap_fork(t_philo_process *process, int fork);
-void	let_go_of_fork(t_philo_process *process, int fork);
-
 int		check_starvation(t_philo_process *process, long time_now);
 int		check_starvation_and_meals(t_philo_process *process,
-			long time_now, int *meals);
+			t_philo *philo_data, long time_now, int *eaten_enough);
 
 void	check_input(char *argv[], int argc);
 void	philo_error_handling(t_philo *philo, int num, int error);

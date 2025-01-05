@@ -12,24 +12,53 @@
 
 #include "../philo_bonus.h"
 
+void	update_last_meal_and_deat_time(t_philo_process *process,long *last_meal ,long *time_of_death)
+{
+	sem_wait(process->meal_sem);
+	*last_meal = process->last_meal;
+	sem_post(process->meal_sem);
+	*time_of_death = process->philo_data->t_to_die + *last_meal;
+}
+
+void	*monitor_starvation(void *arg)
+{
+	t_philo_process *process = (t_philo_process *)arg;
+	long			last_meal;
+	long			time_of_death;
+
+	while (1)
+	{
+		update_last_meal_and_deat_time(process, &last_meal, &time_of_death);
+		if (time_of_death - get_time_in_ms() > 10)
+			usleep((time_of_death - get_time_in_ms() - 10) * 1000);
+		update_last_meal_and_deat_time(process, &last_meal, &time_of_death);
+		if (time_of_death - get_time_in_ms() > 10)
+			continue ;
+		while (time_of_death - get_time_in_ms() < 10)
+		{
+			if (check_starvation(process, get_time_in_ms()))
+				return (NULL);
+			usleep(50);
+		}
+	}
+}
+
 void	philo_eat(t_philo_process *process)
 {
-	grap_fork(process, process->fork1);
-	grap_fork(process, process->fork2);
-	if (check_starvation(process, get_time_in_ms()))
-	{
-		let_go_of_fork(process, process->fork2);
-		let_go_of_fork(process, process->fork1);
-		return ;
-	}
+	sem_wait(process->philo_data->can_eat);
+	sem_wait(process->philo_data->fork);
+	write_status(process, HELD_FORK);
+	sem_wait(process->philo_data->fork);
+	write_status(process, HELD_FORK);
 	write_status(process, EATING);
-	pthread_mutex_lock(&process->philo_data->meal_mutex);
+	sem_wait(process->meal_sem);
 	process->meals++;
 	process->last_meal = get_time_in_ms();
-	pthread_mutex_unlock(&process->philo_data->meal_mutex);
+	sem_post(process->meal_sem);
 	my_usleep(process, process->philo_data->t_to_eat);
-	let_go_of_fork(process, process->fork2);
-	let_go_of_fork(process, process->fork1);
+	sem_post(process->philo_data->fork);
+	sem_post(process->philo_data->fork);
+	sem_post(process->philo_data->can_eat);
 	process->state = SLEEPING;
 }
 
@@ -51,24 +80,19 @@ void	philo_think_sleep(t_philo_process *process)
 void	routine(void *arg)
 {
 	t_philo_process	*process;
+	pthread_t		monitor;
 
 	process = (t_philo_process *)arg;
 	while (process->philo_data->start_time > get_time_in_ms())
 		continue ;
+	pthread_create(&monitor, NULL, monitor_starvation, process);
 	while (1)
 	{
-		pthread_mutex_lock(&process->philo_data->sim_stop_mutex);
-		if (process->philo_data->sim_stop
-			|| check_starvation(process, get_time_in_ms()))
-		{
-			pthread_mutex_unlock(&process->philo_data->sim_stop_mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&process->philo_data->sim_stop_mutex);
 		if (process->state == EATING)
 			philo_eat(process);
 		else
 			philo_think_sleep(process);
 	}
-	exit(0);
+	while (1)
+		usleep(10000);
 }
