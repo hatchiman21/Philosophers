@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:44:24 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 20:20:54 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/06 22:10:47 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	my_usleep(t_philo *philo_data, int time)
 	long	start_time;
 
 	start_time = get_time_in_ms();
-	while (get_time_in_ms() - start_time < time)
+	while ((get_time_in_ms() - start_time) * 1000 < time)
 	{
 		pthread_mutex_lock(&philo_data->sim_stop_mutex);
 		if (philo_data->sim_stop)

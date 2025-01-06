@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 20:31:34 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/06 21:58:28 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ void	stop_simulation(t_philo *philos)
 	sem_close(philos->can_eat);
 	sem_close(philos->sim_already_stopped);
 	sem_close(philos->meal_sem);
+	sem_close(philos->enugh_meals);
+	sem_unlink("enugh_meals");
 	sem_unlink("meal");
 	sem_unlink("sim_already_stopped");
 	sem_unlink("log");
@@ -65,46 +67,45 @@ void	stop_simulation(t_philo *philos)
 	free(philos);
 }
 
-void	main_thread_loop(t_philo *philo_data, int i, int eaten_enough)
+void	*moniter_meals_eaten(void *arg)
 {
-	while (1)
+	t_philo	*phlio_data;
+	int		i;
+
+	phlio_data = (t_philo *)arg;
+	i = 0;
+	while (i < phlio_data->philos_count)
 	{
-		sem_wait(philo_data->sim_stop_sem);
-		stop_simulation(philo_data);
-		return ;
-		if (philo_data->limited_meals)
-			eaten_enough = 1;
-		else
-			eaten_enough = 0;
-		i = 0;
-		while (i < philo_data->philos_count)
-		{
-			if (check_starvation_and_meals(philo_data->process[i],
-					philo_data, get_time_in_ms(), &eaten_enough))
-			{
-				stop_simulation(philo_data);
-				return ;
-			}
-			i++;
-		}
-		if (eaten_enough)
-		{
-			sem_wait(philo_data->sim_stop_sem);
-			stop_simulation(philo_data);
-			return ;
-		}
+		sem_wait(phlio_data->enugh_meals);
+		i++;
 	}
+	sem_wait(phlio_data->log_sem);
+	sem_post(phlio_data->sim_stop_sem);
+	sem_wait(phlio_data->sim_already_stopped);
+	sem_post(phlio_data->log_sem);
+	return (NULL);
 }
 
 int	main(int argc, char *argv[])
 {
-	t_philo	*philo_data;
+	t_philo		*philo_data;
+	pthread_t	monitor;
 
 	check_input(argv, argc);
-	philo_data = assign_philo(argv, argc);
-	create_processes(philo_data);
+	philo_data = assign_philo_data(argv, argc);
+	initiate_philo_sem(philo_data);
+	allocate_philos(philo_data);
+	creat_processes(philo_data);
 	while (philo_data->start_time > get_time_in_ms())
 		continue ;
-	main_thread_loop(philo_data, 0, 0);
+	if (argc == 6)
+	{
+		if (pthread_create(&monitor, NULL, moniter_meals_eaten, philo_data))
+			philo_error_handling(philo_data, 0, 7);
+	}
+	sem_wait(philo_data->sim_stop_sem);
+	if (argc == 6)
+		pthread_detach(monitor);
+	stop_simulation(philo_data);
 	return (0);
 }

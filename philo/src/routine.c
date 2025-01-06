@@ -27,7 +27,7 @@ void	philo_eat(t_philo_process *process, t_philo *philo_data)
 	process->meals++;
 	process->last_meal = get_time_in_ms();
 	pthread_mutex_unlock(&philo_data->meal_mutex);
-	my_usleep(philo_data, philo_data->t_to_eat);
+	my_usleep(philo_data, philo_data->t_to_eat * 1000);
 	let_go_of_fork(philo_data, process->fork2);
 	let_go_of_fork(philo_data, process->fork1);
 	process->state = SLEEPING;
@@ -43,7 +43,7 @@ void	philo_think_sleep(t_philo_process *process)
 	else if (process->state == SLEEPING)
 	{
 		write_status(process, process->philo_data, SLEEPING);
-		my_usleep(process->philo_data, process->philo_data->t_to_sleep);
+		my_usleep(process->philo_data, process->philo_data->t_to_sleep * 1000);
 		process->state = THINKING;
 	}
 }
