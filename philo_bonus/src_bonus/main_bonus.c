@@ -6,11 +6,31 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/06 21:58:28 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/07 18:52:13 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo_bonus.h"
+
+void	check_entered_values(char *argv[], int argc)
+{
+	int	num;
+
+	num = ft_atoi(argv[1]);
+	if (num > 200 || num == 0)
+		philo_error_handling(NULL, 0, 1);
+	num = ft_atoi(argv[2]);
+	if (num < 60 || num == 0)
+		philo_error_handling(NULL, 0, 1);
+	num = ft_atoi(argv[3]);
+	if (num < 60 || num == 0)
+		philo_error_handling(NULL, 0, 1);
+	num = ft_atoi(argv[4]);
+	if (num < 60 || num == 0)
+		philo_error_handling(NULL, 0, 1);
+	if (argc == 6 && ft_atoi(argv[5]) == 0)
+		exit(0);
+}
 
 void	check_input(char *argv[], int argc)
 {
@@ -34,8 +54,9 @@ void	check_input(char *argv[], int argc)
 		while (argv[i][j] && ft_isdigit(argv[i][j]))
 			j++;
 		if (argv[i][j])
-			philo_error_handling(NULL, 0, 1);
+			philo_error_handling(NULL, 0, 0);
 	}
+	check_entered_values(argv, argc);
 }
 
 void	stop_simulation(t_philo *philos)
