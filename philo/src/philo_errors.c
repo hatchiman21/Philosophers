@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:12:55 by aatieh            #+#    #+#             */
-/*   Updated: 2025/02/26 03:00:12 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 03:48:04 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void	philo_error_message(int error)
 {
-	if (error == 1)
+	if (error == 0)
 		write(2, "wrong input format\n", 20);
+	else if (error == 1)
+		write(2, "invalid input values\n", 22);
 	else if (error == 2)
 		write(2, "main philo malloc failed\n", 26);
 	else if (error == 3)

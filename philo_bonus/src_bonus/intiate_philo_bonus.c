@@ -6,61 +6,13 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 05:52:22 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 20:36:44 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/07 18:52:13 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo_bonus.h"
 
-static int	allocation(long int n, char **res, int base)
-{
-	int			i;
-
-	i = 1;
-	n = n;
-	if (n < 0)
-	{
-		i++;
-		n *= -1;
-	}
-	else if (n == 0)
-		i++;
-	while (n > 0)
-	{
-		n /= base;
-		i++;
-	}
-	*res = (char *)malloc(sizeof(char) * i);
-	return (i - 1);
-}
-
-char	*ft_itoa(int n)
-{
-	char		*res;
-	int			i;
-	long int	temp;
-
-	i = allocation((int)n, &res, 10);
-	if (res == NULL)
-		return (NULL);
-	temp = n;
-	if (n < 0)
-	{
-		temp *= -1;
-		res[0] = '-';
-	}
-	res[i--] = '\0';
-	if (temp == 0)
-		res[i] = '0';
-	while (temp > 0)
-	{
-		res[i--] = (temp % 10) + '0';
-		temp /= 10;
-	}
-	return (res);
-}
-
-void	creat_threads(t_philo *philo_data)
+void	creat_processes(t_philo *philo_data)
 {
 	int				i;
 	t_philo_process	*process;
@@ -70,13 +22,15 @@ void	creat_threads(t_philo *philo_data)
 	{
 		process = philo_data->process[i];
 		process->id = fork();
+		if (process->id < 0)
+			philo_error_handling(philo_data, i, 6);
 		if (!process->id)
-			routine(process);
+			philo_routine(process);
 		i++;
 	}
 }
 
-void	create_processes(t_philo *philo_data)
+void	allocate_philos(t_philo *philo_data)
 {
 	int				i;
 	t_philo_process	*process;
@@ -87,7 +41,7 @@ void	create_processes(t_philo *philo_data)
 	{
 		philo_data->process[i] = malloc(sizeof(t_philo_process));
 		if (!philo_data->process[i])
-			philo_error_handling(philo_data, i, 9);
+			philo_error_handling(philo_data, i, 5);
 		process = philo_data->process[i];
 		process->philo_num = i;
 		process->philo_data = philo_data;
@@ -96,31 +50,33 @@ void	create_processes(t_philo *philo_data)
 		process->meals = 0;
 		i++;
 	}
-	creat_threads(philo_data);
 }
 
-void	initiate_philo_seph(t_philo *philo_data)
+void	initiate_philo_sem(t_philo *philo_data)
 {
-	int		can_eat;
-
 	sem_unlink("log");
 	sem_unlink("sim_stop");
 	sem_unlink("fork");
 	sem_unlink("can_eat");
 	sem_unlink("sim_already_stopped");
 	sem_unlink("meal");
-	can_eat = philo_data->philos_count / 2 + philo_data->philos_count % 2;
-	philo_data->can_eat = sem_open("can_eat", O_CREAT, 0644, can_eat);
+	sem_unlink("enugh_meals");
+	philo_data->can_eat = sem_open("can_eat", O_CREAT, 0644,
+			philo_data->philos_count / 2 + philo_data->philos_count % 2);
 	philo_data->sim_already_stopped = sem_open("sim_already_stopped",
 			O_CREAT, 0644, 1);
+	philo_data->enugh_meals = sem_open("enugh_meals", O_CREAT, 0644, 0);
 	philo_data->meal_sem = sem_open("meal", O_CREAT, 0644, 1);
 	philo_data->log_sem = sem_open("log", O_CREAT, 0644, 1);
 	philo_data->sim_stop_sem = sem_open("sim_stop", O_CREAT, 0644, 0);
 	philo_data->fork = sem_open("fork", O_CREAT, 0644,
 			philo_data->philos_count);
 	if (philo_data->fork == SEM_FAILED || philo_data->log_sem == SEM_FAILED
-		|| philo_data->sim_stop_sem == SEM_FAILED || philo_data->meal_sem == SEM_FAILED
-		|| philo_data->can_eat == SEM_FAILED || philo_data->sim_already_stopped == SEM_FAILED)
+		|| philo_data->sim_stop_sem == SEM_FAILED
+		|| philo_data->meal_sem == SEM_FAILED
+		|| philo_data->can_eat == SEM_FAILED
+		|| philo_data->enugh_meals == SEM_FAILED
+		|| philo_data->sim_already_stopped == SEM_FAILED)
 		philo_error_handling(philo_data, 0, 4);
 }
 
@@ -131,18 +87,12 @@ void	get_values(t_philo *philo_data, char *argv[], int argc)
 	philo_data->t_to_eat = ft_atoi(argv[3]);
 	philo_data->t_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
-	{
 		philo_data->times_must_eat = ft_atoi(argv[5]);
-		philo_data->limited_meals = 1;
-	}
 	else
-	{
 		philo_data->times_must_eat = 0;
-		philo_data->limited_meals = 0;
-	}
 }
 
-t_philo	*assign_philo(char *argv[], int argc)
+t_philo	*assign_philo_data(char *argv[], int argc)
 {
 	t_philo			*philo_data;
 
@@ -155,7 +105,6 @@ t_philo	*assign_philo(char *argv[], int argc)
 			* philo_data->philos_count);
 	if (!philo_data->process)
 		philo_error_handling(philo_data, 0, 3);
-	initiate_philo_seph(philo_data);
 	philo_data->sim_stop = 0;
 	return (philo_data);
 }

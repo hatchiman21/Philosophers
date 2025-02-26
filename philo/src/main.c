@@ -6,11 +6,32 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/02/26 03:09:36 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 05:30:11 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
+
+void	*check_entered_values(char *argv[], int argc)
+{
+	int	num;
+
+	num = ft_atoi(argv[1]);
+	if (num > 200 || num == 0)
+		return (philo_error_handling(NULL, 0, 1));
+	num = ft_atoi(argv[2]);
+	if (num < 60 || num == 0)
+		return (philo_error_handling(NULL, 0, 1));
+	num = ft_atoi(argv[3]);
+	if (num < 60 || num == 0)
+		return (philo_error_handling(NULL, 0, 1));
+	num = ft_atoi(argv[4]);
+	if (num < 60 || num == 0)
+		return (philo_error_handling(NULL, 0, 1));
+	if (argc == 6 && ft_atoi(argv[5]) == 0)
+		return (NULL);
+	return (*argv);
+}
 
 void	*check_input(char *argv[], int argc)
 {
@@ -36,6 +57,8 @@ void	*check_input(char *argv[], int argc)
 		if (argv[i][j])
 			return (philo_error_handling(NULL, 0, 1));
 	}
+	if (!check_entered_values(argv, argc))
+		return (NULL);
 	return (*argv);
 }
 
@@ -95,7 +118,7 @@ int	main(int argc, char *argv[])
 {
 	t_philo	*philo_data;
 
-	if (check_input(argv, argc) == NULL)
+	if (!check_input(argv, argc))
 		return (1);
 	philo_data = assign_philo(argv, argc);
 	if (!philo_data)

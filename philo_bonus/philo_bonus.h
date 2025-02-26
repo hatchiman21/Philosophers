@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 20:46:50 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/06 21:04:46 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_philo
 	sem_t			*log_sem;
 	sem_t			*can_eat;
 	sem_t			*sim_already_stopped;
+	sem_t			*enugh_meals;
 	t_philo_process	**process;
 }					t_philo;
 
@@ -75,8 +76,10 @@ int		check_starvation_and_meals(t_philo_process *process,
 void	philo_sem_clean(t_philo *philo_data);
 void	check_input(char *argv[], int argc);
 void	philo_error_handling(t_philo *philo, int num, int error);
-t_philo	*assign_philo(char *argv[], int argc);
-void	create_processes(t_philo *philo_data);
-void	routine(void *arg);
+void	initiate_philo_sem(t_philo *philo_data);
+t_philo	*assign_philo_data(char *argv[], int argc);
+void	creat_processes(t_philo *philo_data);
+void	allocate_philos(t_philo *philo_data);
+void	philo_routine(void *arg);
 
 #endif

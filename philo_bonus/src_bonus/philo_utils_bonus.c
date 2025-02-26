@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/15 20:18:48 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/05 06:21:53 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/01/06 19:10:37 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	write_message(t_philo_process *philo, char *msg)
 {
-	printf("%lu ms Philosopher %d %s\n", get_time_in_ms()
+	printf("%lu Philosopher %d %s\n", get_time_in_ms()
 		- philo->philo_data->start_time, philo->philo_num + 1, msg);
 }
 
