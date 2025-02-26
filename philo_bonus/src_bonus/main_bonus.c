@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/07 18:52:13 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 05:38:58 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,5 +128,7 @@ int	main(int argc, char *argv[])
 	if (argc == 6)
 		pthread_detach(monitor);
 	stop_simulation(philo_data);
+	while (wait(0) > 0)
+		continue ;
 	return (0);
 }

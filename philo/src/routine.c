@@ -38,6 +38,7 @@ void	philo_think_sleep(t_philo_process *process)
 	if (process->state == THINKING)
 	{
 		write_status(process, process->philo_data, THINKING);
+		usleep(500);
 		process->state = EATING;
 	}
 	else if (process->state == SLEEPING)
@@ -57,6 +58,8 @@ void	*routine(void *arg)
 	philo_data = process->philo_data;
 	while (philo_data->start_time > get_time_in_ms())
 		continue ;
+	if (process->philo_num % 2)
+		my_usleep(philo_data, 100);
 	while (1)
 	{
 		pthread_mutex_lock(&philo_data->sim_stop_mutex);

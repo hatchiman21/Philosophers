@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/06 21:04:46 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 05:39:47 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <semaphore.h>
 # include <sys/types.h>
 # include <signal.h>
+# include <sys/wait.h>
 
 # define EATING 0
 # define THINKING 1
