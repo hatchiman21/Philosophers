@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:25:46 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 20:22:31 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 03:01:52 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,10 @@ int		check_starvation(t_philo_process *process,
 int		check_starvation_and_meals(t_philo_process *process,
 			t_philo *philo_data, long time_now, int *meals);
 
-void	check_input(char *argv[], int argc);
-void	philo_error_handling(t_philo *philo, int num, int error);
+void	*check_input(char *argv[], int argc);
+void	*philo_error_handling(t_philo *philo, int num, int error);
 t_philo	*assign_philo(char *argv[], int argc);
-void	make_threads(t_philo *philo_data);
+void	*make_threads(t_philo *philo_data);
 void	*routine(void *arg);
 
 #endif

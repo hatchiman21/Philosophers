@@ -6,7 +6,7 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:12:55 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 05:25:20 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 03:00:12 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	philo_thread_error_handling(t_philo *philo, int num, int error)
 		pthread_mutex_destroy(&philo->sim_stop_mutex);
 }
 
-void	philo_error_handling(t_philo *philo, int num, int error)
+void	*philo_error_handling(t_philo *philo, int num, int error)
 {
 	if (error >= 3)
 	{
@@ -85,5 +85,5 @@ void	philo_error_handling(t_philo *philo, int num, int error)
 		free(philo);
 	}
 	philo_error_message(error);
-	exit(error);
+	return (NULL);
 }

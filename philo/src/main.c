@@ -6,13 +6,13 @@
 /*   By: aatieh <aatieh@student.42amman.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 21:24:58 by aatieh            #+#    #+#             */
-/*   Updated: 2025/01/04 20:18:30 by aatieh           ###   ########.fr       */
+/*   Updated: 2025/02/26 03:09:36 by aatieh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-void	check_input(char *argv[], int argc)
+void	*check_input(char *argv[], int argc)
 {
 	int		i;
 	int		j;
@@ -20,12 +20,12 @@ void	check_input(char *argv[], int argc)
 	if (argc < 5)
 	{
 		write(2, "not enough arguments\n", 22);
-		exit (1);
+		return (NULL);
 	}
 	else if (argc > 6)
 	{
 		write(2, "too many arguments\n", 20);
-		exit (1);
+		return (NULL);
 	}
 	i = 0;
 	while (i++ < argc - 1)
@@ -34,8 +34,9 @@ void	check_input(char *argv[], int argc)
 		while (argv[i][j] && ft_isdigit(argv[i][j]))
 			j++;
 		if (argv[i][j])
-			philo_error_handling(NULL, 0, 1);
+			return (philo_error_handling(NULL, 0, 1));
 	}
+	return (*argv);
 }
 
 void	stop_simulation(t_philo *philos)
@@ -94,9 +95,13 @@ int	main(int argc, char *argv[])
 {
 	t_philo	*philo_data;
 
-	check_input(argv, argc);
+	if (check_input(argv, argc) == NULL)
+		return (1);
 	philo_data = assign_philo(argv, argc);
-	make_threads(philo_data);
+	if (!philo_data)
+		return (1);
+	if (!make_threads(philo_data))
+		return (1);
 	while (philo_data->start_time > get_time_in_ms())
 		continue ;
 	main_thread_loop(philo_data, 0, 0);
